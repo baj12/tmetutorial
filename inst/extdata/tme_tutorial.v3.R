@@ -169,8 +169,13 @@ ElbowPlot(object = gex, ndims = 100)
 # the `resolution = 1` clusters, but their biological identities were not
 # clearly distinguished (data not shown).
 gex <- FindNeighbors(gex, dims = 1:100)
+<<<<<<< HEAD
 gex <- FindClusters(object = gex, algorithm = 1,
                       resolution = 1.5)
+=======
+gex <- FindClusters(object = gex,
+                      resolution = 1)
+>>>>>>> 3c71c06bc817b645021dabc261bc581ba09ef625
 
 # We visualize cell clusters with tSNE.
 gex <- RunTSNE(object = gex, dims.use = 1:50, do.fast = TRUE)
@@ -208,6 +213,7 @@ gex.markers %>% group_by(cluster) %>% top_n(2, avg_logFC)
 # FCER1A, FCGR3A, LYZ).
 
 # enable FeaturePlot with cluster identity labels
+<<<<<<< HEAD
 labelFeaturePlot <- function(object, features.plot, nCol = 2,
                             cols.use = c("grey", "blue"),
                             reduction.use = "tsne", ...) {
@@ -215,14 +221,30 @@ labelFeaturePlot <- function(object, features.plot, nCol = 2,
     Embeddings(gex[["tsne"]])
   )
   pLabel$ident <- Idents(object)
+=======
+labelFeaturePlot<- function(object, features.plot, nCol = 2,
+                            cols.use = c("grey", "blue"),
+                            reduction.use = "tsne", ...) {
+  pLabel <- as.data.frame(
+    GetDimReduction(object, reduction.type = reduction.use, slot = "cell.embeddings")
+  )
+  pLabel$ident <- object@ident
+>>>>>>> 3c71c06bc817b645021dabc261bc581ba09ef625
   centers <- pLabel %>% dplyr::group_by(ident) %>%
     dplyr::summarize(x = median(tSNE_1),
                      y = median(tSNE_2))
   featureList <- features.plot[which(
+<<<<<<< HEAD
     features.plot %in% rownames(x = object@assays$RNA)
   )]
   notFound <- features.plot[which(
     !features.plot %in% rownames(x = object@assays$RNA)
+=======
+    features.plot %in% object@data@Dimnames[[1]]
+  )]
+  notFound <- features.plot[which(
+    !features.plot %in% object@data@Dimnames[[1]]
+>>>>>>> 3c71c06bc817b645021dabc261bc581ba09ef625
   )]
   if (length(notFound) > 0) {
     for (nf in notFound) {
@@ -230,7 +252,13 @@ labelFeaturePlot <- function(object, features.plot, nCol = 2,
     }
   }
   pdf(NULL)
+<<<<<<< HEAD
   p <- FeaturePlot(object = object, features = featureList)
+=======
+  p <- FeaturePlot(object = object, features.plot = featureList,
+                   cols.use = cols.use, reduction.use = reduction.use,
+                   do.return = TRUE, ...)
+>>>>>>> 3c71c06bc817b645021dabc261bc581ba09ef625
   dev.off()
   cowplot::plot_grid(plotlist = lapply(p, function(x)
     x + geom_text(data = centers, mapping = aes(label = ident))),
